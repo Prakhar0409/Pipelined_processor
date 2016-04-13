@@ -77,13 +77,13 @@ begin
 	actr : Actrl 
 		port map(
 			clk => clock,
-			ins => ins (6 downto 1),
+			ins => inst (6 downto 1),
 			opc => opc
 		);
 
 	bctr : Bctrl
 		port map(
-			ins => ins(11 downto 8),
+			ins => inst(11 downto 8),
 			flags => flags,
 			p => predicatep
 		);
@@ -99,29 +99,29 @@ begin
 	
 	process(clock)			--generate all control signals based on dp or dt or branch instruction
 	begin							-- ins[31-20] in ins(11 downto 0)
-		if(ins(7 downto 6) = "00") then
+		if(inst(7 downto 6) = "00") then
 			if (mul = "1001") then
 				Rsrc <= '1';	Asrc<='0';		M2R<='0';		RW<= predicatep;		MW<='0';			MR <='0';	Psrc <= '0';	Fset <= predicatep;		ML<='1';
-			elsif (ins(4)='0' and ins(0)='0') then
+			elsif (inst(4)='0' and inst(0)='0') then
 				Rsrc <= '0'; 	Asrc<='0';		M2R<='0';		RW <= predicatep;		MW <= '0';  	MR <= '0';	Psrc <= '0';	Fset <= '0';				ML<='0';
-			elsif (ins(4)='0' and ins(0)='1') then
+			elsif (inst(4)='0' and inst(0)='1') then
 				Rsrc <= '0'; 	Asrc<='0';		M2R<='0';		RW <= predicatep;		MW <= '0';  	MR <= '0';	Psrc <= '0';	Fset <= predicatep;		ML<='0';
-			elsif (ins(3) ='1' and ins(0)='0') then	
+			elsif (inst(3) ='1' and inst(0)='0') then	
 				Rsrc <= '0'; 	Asrc<='0';		M2R<='0';		RW <= predicatep;		MW <= '0';  	MR <= '0';	Psrc <= '0';	Fset <= '0';				ML<='0';
-			elsif (ins(3)= '1' and ins(0)='1') then
+			elsif (inst(3)= '1' and inst(0)='1') then
 				Rsrc <= '0'; 	Asrc<='0';		M2R<='0';		RW <= predicatep;		MW <= '0';  	MR <= '0';	Psrc <= '0';	Fset <= predicatep;		ML<='0';
-			elsif (ins(4)='1' and ins(3)='0') then
+			elsif (inst(4)='1' and inst(3)='0') then
 				Rsrc <= '0'; 	Asrc<='0';		M2R<='0';		RW <= '0';				MW <= '0';  	MR <= '0';	Psrc <= '0';	Fset <= predicatep;		ML<='0';
 			else null;
 			end if;
-		elsif (ins(7 downto 6) = "01") then
+		elsif (inst(7 downto 6) = "01") then
 			Rsrc <= '1';
 			Asrc<='1';		
 			M2R<='1';		
 			Psrc <='0';
 			Fset <='0';
 			ML<='0';			--is it a multiply instruction?
-			if (ins(0)='0') then
+			if (inst(0)='0') then
 				RW <='0';
 				MW <=predicatep;
 				MR <='0';
@@ -130,7 +130,7 @@ begin
 				MW<='0';
 				MR <='1';
 			end if;
-		elsif (ins(7 downto 6) = "10") then		--branch instruction
+		elsif (inst(7 downto 6) = "10") then		--branch instruction
 			Rsrc <= '0';     --Rsrc = X
 			Asrc<='0';
 			M2R<='0';		

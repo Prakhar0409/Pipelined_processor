@@ -1,17 +1,68 @@
-Running: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib secureip -o D:/vhdl/pipelinedDatapath/delete_isim_beh.exe -prj D:/vhdl/pipelinedDatapath/delete_beh.prj work.delete 
+Running: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib secureip -o D:/vhdl/pipelinedDatapath/processor_isim_beh.exe -prj D:/vhdl/pipelinedDatapath/processor_beh.prj work.processor 
 ISim P.20131013 (signature 0x7708f090)
 Number of CPUs detected in this system: 4
 Turning on mult-threading, number of parallel sub-compilation jobs: 8 
 Determining compilation order of HDL files
-Parsing VHDL file "D:/vhdl/pipelinedDatapath/delete.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/ipcore_dir/InstMem.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/ipcore_dir/dataMem.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/RegisterFile.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/regGen.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/PC.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/MyMultiplexer.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/Multiplex4.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/Bctrl.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/alu.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/Actrl.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/datapath.vhd" into library work
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 275: Actual for formal port minp1 is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 276: Actual for formal port minp2 is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 296: Actual for formal port addra is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 364: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 430: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 465: Actual for formal port regin is neither a static name nor a globally static expression
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/controller.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/processor.vhd" into library work
 Starting static elaboration
+WARNING:HDLCompiler:321 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 251: Comparison between arrays of unequal length always returns FALSE.
+WARNING:HDLCompiler:321 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 259: Comparison between arrays of unequal length always returns FALSE.
 Completed static elaboration
 Compiling package standard
 Compiling package std_logic_1164
-Compiling architecture behavioral of entity delete
+Compiling package numeric_std
+Compiling architecture behavioral of entity Actrl [actrl_default]
+Compiling architecture behavioral of entity Bctrl [bctrl_default]
+Compiling architecture behavioral of entity controller [controller_default]
+Compiling package std_logic_arith
+Compiling package std_logic_unsigned
+Compiling architecture behavioral of entity MyMultiplexer [\MyMultiplexer(10)\]
+Compiling architecture behavioral of entity pc [pc_default]
+Compiling package textio
+Compiling package std_logic_textio
+Compiling architecture output_stage_behavioral of entity BLK_MEM_GEN_V7_3_output_stage [\BLK_MEM_GEN_V7_3_output_stage("...]
+Compiling architecture output_stage_behavioral of entity BLK_MEM_GEN_V7_3_output_stage [\BLK_MEM_GEN_V7_3_output_stage("...]
+Compiling architecture softecc_output_reg_stage_behavioral of entity BLK_MEM_GEN_V7_3_softecc_output_reg_stage [\BLK_MEM_GEN_V7_3_softecc_output...]
+Compiling architecture mem_module_behavioral of entity BLK_MEM_GEN_V7_3_mem_module [\BLK_MEM_GEN_V7_3_mem_module("bl...]
+Compiling architecture behavioral of entity BLK_MEM_GEN_V7_3 [\BLK_MEM_GEN_V7_3("blk_mem_gen_v...]
+Compiling architecture instmem_a of entity InstMem [instmem_default]
+Compiling architecture behavioral of entity regGen [\regGen(32)\]
+Compiling architecture behavioral of entity MyMultiplexer [\MyMultiplexer(4)\]
+Compiling architecture behavioral of entity RegisterFile [registerfile_default]
+Compiling architecture behavioral of entity regGen [\regGen(143)\]
+Compiling architecture behavioral of entity MyMultiplexer [\MyMultiplexer(32)\]
+Compiling architecture behavioral of entity Multiplex4 [\Multiplex4(32)\]
+Compiling architecture behavioral of entity alu [alu_default]
+Compiling architecture behavioral of entity regGen [\regGen(72)\]
+Compiling architecture mem_module_behavioral of entity BLK_MEM_GEN_V7_3_mem_module [\BLK_MEM_GEN_V7_3_mem_module("bl...]
+Compiling architecture behavioral of entity BLK_MEM_GEN_V7_3 [\BLK_MEM_GEN_V7_3("blk_mem_gen_v...]
+Compiling architecture datamem_a of entity dataMem [datamem_default]
+Compiling architecture behavioral of entity regGen [\regGen(69)\]
+Compiling architecture behavioral of entity datapath [datapath_default]
+WARNING:HDLCompiler:746 - "N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Range is empty (null range)
+WARNING:HDLCompiler:220 - "N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Assignment ignored
+Compiling architecture behavioral of entity processor
 Time Resolution for simulation is 1ps.
 Waiting for 1 sub-compilation(s) to finish...
-Compiled 3 VHDL Units
-Built simulation executable D:/vhdl/pipelinedDatapath/delete_isim_beh.exe
-Fuse Memory Usage: 29304 KB
-Fuse CPU Usage: 499 ms
+Compiled 56 VHDL Units
+Built simulation executable D:/vhdl/pipelinedDatapath/processor_isim_beh.exe
+Fuse Memory Usage: 55960 KB
+Fuse CPU Usage: 2843 ms

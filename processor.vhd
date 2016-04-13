@@ -77,7 +77,7 @@ architecture Behavioral of processor is
 			ML				: in std_logic:='0';			--multiply indicator
 			opc 			: in std_logic_vector(3 downto 0):=(others=>'0');
 			
-			instRegOut 	: out std_logic_vector(31 downto 0) := (others => '0')
+			instOut 	: out std_logic_vector(31 downto 0) := (others => '0')
 		);
 	end component;
 	
@@ -102,7 +102,7 @@ begin
 	
 	control : Controller 
 		port map(
-			inst 	=> inst,
+			inst 	=> inst(31 downto 20),
 			mul	=> mul,
 			clock	=> clock,
 			flags	=> flags,
@@ -126,7 +126,7 @@ begin
 		port map(
 			clk 			=> clock,
 			
-			instRegOut	=> inst,
+			instOut	=> inst,
 			
 			Rsrc 			=> Rsrc,
 			RW 			=> RW,

@@ -5,5 +5,35 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 275: Actual for formal port <arg fmt="%s" index="1">minp1</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 276: Actual for formal port <arg fmt="%s" index="1">minp2</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 296: Actual for formal port <arg fmt="%s" index="1">addra</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 364: Actual for formal port <arg fmt="%s" index="1">regin</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 430: Actual for formal port <arg fmt="%s" index="1">regin</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="946" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 465: Actual for formal port <arg fmt="%s" index="1">regin</arg> is neither a static name nor a globally static expression
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="321" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 251: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="321" delta="unknown" >"D:/vhdl/pipelinedDatapath/datapath.vhd" Line 259: Comparison between arrays of unequal length always returns <arg fmt="%s" index="1">FALSE</arg>.
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="746" delta="unknown" >"N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Range is empty (null range)
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="220" delta="unknown" >"N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Assignment ignored
+</msg>
+
 </messages>
 

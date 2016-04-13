@@ -54,7 +54,7 @@ entity datapath is
 		RW 	: in std_logic := '0';
 		
 		-- output inst
-		instRegOut : out std_logic_vector(31 downto 0) := (others => '0');
+		instOut : out std_logic_vector(31 downto 0) := (others => '0');
 		
 		-- TODO DONNO
 		Psrc 	: in std_logic := '0';			-- pc is not to be modified so throw away this signal // TODO
@@ -178,7 +178,7 @@ architecture Behavioral of datapath is
 	signal pcEn  		: std_logic:='0';
 	--Signals to instMem
 	signal instRegIn 		: 	std_logic_vector(31 downto 0):=(others=>'0');
-	signal instRegOut 	: 	std_logic_vector(31 downto 0):=(others=>'0');
+
 	signal ifIdEn			:	std_logic:='0';											-- TODO not sure of what to do
 	--signals to registerFile
 	signal aIn			:	std_logic_vector(31 downto 0):=(others=>'0');
@@ -190,18 +190,18 @@ architecture Behavioral of datapath is
 	signal b				: 	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--ExMem multiplexer
-	signal exMemOut	:	std_logic_vector(67 downto 0):=(others=>'0');
+	signal exMemOut	:	std_logic_vector(71 downto 0):=(others=>'0');
 	signal exMemEn		:	std_logic := '0';
 	
 	-- IDorEX register
-	signal idExOut		: 	std_logic_vector(123 downto 0):=(others=>'0');
+	signal idExOut		: 	std_logic_vector(142 downto 0):=(others=>'0');
 	signal idExEn		:	std_logic := '0';
 	signal aOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal bOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal ExOffOut	:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal wbAddr		:	std_logic_vector(3 downto 0):=(others=>'0');
 	
-	
+	signal instRegOut :  std_logic_vector(31 downto 0) := (others => '0');
 
 	--signals for alu
 	signal carryIn		: 	std_logic:='0';
@@ -218,7 +218,7 @@ architecture Behavioral of datapath is
 	signal dmOut		:	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--memWB register
-	signal memWbOut	:	std_logic_vector(67 downto 0):=(others=>'0');
+	signal memWbOut	:	std_logic_vector(68 downto 0):=(others=>'0');
 	signal memWbEn		:	std_logic:='0';
 	
 	-- dmOutMux
@@ -235,8 +235,8 @@ architecture Behavioral of datapath is
 	
 	--random unknown signals
 	signal pSel	:	std_logic:='0';	-- TODO pc Mul select
-	signal ML	: std_logic:='0';		-- TODO see reg1mul
-	signal Rsrc	: std_logic:='0';		-- TODO see reg2mul
+
+
 	signal preAluMuxSel:std_logic:='0';
 	
 	-- TODO remaining signals ifIdEn, ML(tell whether the instruction is multiply or not) , rfWriteEn , idExEn, preAluMuxSel, exMemEn, dmEn, memWbEn
@@ -245,13 +245,29 @@ begin
 	
 DataForwards:process(clk)
 					begin
-						if((exMemOut(71) = '1') and (exMemOut(67 downto 64) = idExOut(27 downto 24))) then
+						-- for fwdA
+						if((exMemOut(71) = '1') and (exMemOut(67 downto 64) = idExOut(142 downto 139))) then
 							fwdA <= "01";
-						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(27 downto 24)) and (memWbOut(67 downto 63) = idExOut(27 downto 24))) then 
+						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(142 downto 139)) and (memWbOut(67 downto 63) = idExOut(142 downto 139))) then 
 							fwdA <= "10";
 						else 
 							fwdA <= "00";
 						end if;
+						-- for fwdB
+						if((exMemOut(71) = '1') and (exMemOut(67 downto 64) = idExOut(138 downto 135))) then
+							fwdB <= "01";
+						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(138 downto 135)) and (memWbOut(67 downto 63) = idExOut(138 downto 135))) then 
+							fwdB <= "10";
+						else 
+							fwdB <= "00";
+						end if;
+						-- for fwdC
+						if((memWbOut(68) = '1') and (memWbOut(67 downto 64) = exMemOut(67 downto 64))) then
+							fwdC <= '1';
+						else 
+							fwdC <= '0';
+						end if;
+
 					end process;
 	
 	pcMux : MyMultiplexer generic map (N => 10) 
@@ -293,23 +309,24 @@ DataForwards:process(clk)
 			regReset =>		'0',
 			regEn 	=>		ifIdEn
          );
-	
-updateML:process(clk,instRegOut)				--checks if instruction is multiply or not kindoff part of control but still added in datapath
-	begin
-		if(instRegOut(25)='1' and instRegOut(7 downto 4)="1001") then
-			ML	<=	'1';
-		else 
-			ML <= '0';
-		end if;
-	end process;
+	instOut <= instRegOut;		--instruction to be sent to the controller
+	-- TODO see if ML is also being forwarded to appropriate componenet via the register chaining
+--updateML:process(clk,instRegOut)				--checks if instruction is multiply or not kindoff part of control but still added in datapath
+--	begin
+--		if(instRegOut(25)='1' and instRegOut(7 downto 4)="1001") then
+--			ML	<=	'1';
+--		else 
+--			ML <= '0';
+--		end if;
+--	end process;
 	
 	
 	
 
 	reg1Mul : MyMultiplexer generic map (N => 4) 
 		port map (										--Selects between Rn and Rs
-			minp1 => instRegOut(19 downto 16), 
-			minp2 => instRegOut(11 downto 8), 
+			minp1 => instRegOut(19 downto 16), 		-- Rn
+			minp2 => instRegOut(11 downto 8), 		-- Rs
 			moutp => regASel, 
 			msel	=> ML
 			);
@@ -317,8 +334,8 @@ updateML:process(clk,instRegOut)				--checks if instruction is multiply or not k
 	
 	reg2Mul : MyMultiplexer generic map (N => 4) 
 		port map (										--Selects between Rd and Rm
-			minp1 => instRegOut(3 downto 0), 
-			minp2 => instRegOut(15 downto 12), 
+			minp1 => instRegOut(3 downto 0), 	--Rm
+			minp2 => instRegOut(15 downto 12), 	--Rd
 			moutp => regBSel, 
 			msel=> Rsrc
 			);
@@ -340,11 +357,11 @@ updateML:process(clk,instRegOut)				--checks if instruction is multiply or not k
 	IDorEX : regGen 			-- 23 downto 0 => PC branch || 55 downto 24 for aIn || 
 									-- 87 downto 56 for bIn || 119 downto 88 for extended offset || 123 downto 119 for write Addr @tot 123 downto 0
 	 Generic map(
-			N			=> 135     -- 124 for datapath signals + 11 control signals
+			N			=> 143     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel
 			)
 	 Port map( 					-- idExOut(27 downto 24) == aIn; 
 			clk 		=>		clk,
-			regIn 	=> 	RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
+			regIn 	=> 	regASel & regBSel & RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
 			regOut 	=>		idExOut,				
 			regReset =>		'0',
 			regEn 	=>		idExEn
