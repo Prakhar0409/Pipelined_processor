@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "secureip" -o "D:/vhdl/pipelinedDatapath/delete_isim_beh.exe" -prj "D:/vhdl/pipelinedDatapath/delete_beh.prj" "work.delete" 
