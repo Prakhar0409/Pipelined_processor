@@ -46,11 +46,13 @@ entity controller is
 		RW 	: out std_logic;
 		M2R 	: out std_logic:='0';
 		ML		: out std_logic:='0';			--multiply indicator
+		del 	: out std_logic_vector(1 downto 0):=(others=>'0');
 		opc 	: out std_logic_vector(3 downto 0):=(others=>'0')
 	);
 end controller;
 
 architecture Behavioral of Controller is
+	
 	
 	component Actrl is
 	  port(
@@ -72,6 +74,8 @@ architecture Behavioral of Controller is
 	--signal Rsrc			: std_logic :='0';
 	
 begin
+	del <= inst(7 downto 6);
+	
 	-- Asrc
 	
 	actr : Actrl 
@@ -97,7 +101,7 @@ begin
 	--M2R <= Rsrc;
 	--M2R and Asrc are same as Rsrc
 	
-	process(clock)			--generate all control signals based on dp or dt or branch instruction
+	process(clock,inst)			--generate all control signals based on dp or dt or branch instruction
 	begin							-- ins[31-20] in ins(11 downto 0)
 		if(inst(7 downto 6) = "00") then
 			if (mul = "1001") then

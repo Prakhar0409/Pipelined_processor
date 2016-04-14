@@ -34,7 +34,13 @@ entity datapath is
 	port(
 		clk : in std_logic:='0';
 	
-		
+		exMemEn	: in std_logic := '0';
+		dmEn		: in std_logic:='0';
+		idExEn	: in std_logic := '0';
+		memWbEn	: in std_logic:='0';
+		ifIdEn	: in std_logic:='0';											
+
+
 
 		-- Directly to the correct places
 		Rsrc 	: in std_logic := '0';			
@@ -152,6 +158,20 @@ architecture Behavioral of datapath is
          );
 	end component;
 	
+	component preAlu is
+		port (
+			ML 	: in std_logic:='0';
+			Rsrc : in std_logic := '0';
+			I : in std_logic := '0';
+			preAluInp : in std_logic_vector(11 downto 0) := (others => '0');
+			preAluNum : in bit_vector(31 downto 0) := (others => '0');
+			--s_amt: in integer;
+			--rot : in integer;
+			preAluCout : out std_logic_vector(0 downto 0):= (others=>'0');--:='0';		
+			preAluOutp : out std_logic_vector(31 downto 0) := (others => '0')
+		);
+	end component;
+	
 	component alu
 		port (
 			inp1			:	in signed (31 downto 0):=(others=>'0');			--input 1	
@@ -175,11 +195,10 @@ architecture Behavioral of datapath is
 	-- Signals connected to progrm counter
 	signal pcOut 		: std_logic_vector(9 downto 0):=(others=>'0');
 	signal pcIn	 		: std_logic_vector(31 downto 0):=(others=>'0');
-	signal pcEn  		: std_logic:='0';
+	signal pcEn  		: std_logic:='1';
 	--Signals to instMem
 	signal instRegIn 		: 	std_logic_vector(31 downto 0):=(others=>'0');
 
-	signal ifIdEn			:	std_logic:='0';											-- TODO not sure of what to do
 	--signals to registerFile
 	signal aIn			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal bIn			: 	std_logic_vector(31 downto 0):=(others=>'0');
@@ -191,11 +210,9 @@ architecture Behavioral of datapath is
 	
 	--ExMem multiplexer
 	signal exMemOut	:	std_logic_vector(71 downto 0):=(others=>'0');
-	signal exMemEn		:	std_logic := '0';
 	
 	-- IDorEX register
-	signal idExOut		: 	std_logic_vector(142 downto 0):=(others=>'0');
-	signal idExEn		:	std_logic := '0';
+	signal idExOut		: 	std_logic_vector(143 downto 0):=(others=>'0');
 	signal aOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal bOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal ExOffOut	:	std_logic_vector(31 downto 0):=(others=>'0');
@@ -210,16 +227,15 @@ architecture Behavioral of datapath is
 	signal alooOut		:	signed(31 downto 0):=(others=>'0');
 	signal carryOut	:	std_logic:='0';
 
-	
+		
 	
 	--data memory
 	signal dmWriteEn 	:	std_logic:='0';
-	signal dmEn			:	std_logic:='0';
 	signal dmOut		:	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--memWB register
-	signal memWbOut	:	std_logic_vector(68 downto 0):=(others=>'0');
-	signal memWbEn		:	std_logic:='0';
+	signal memWbOut	:	std_logic_vector(69 downto 0):=(others=>'0');
+	--signal memWbOut	:	std_logic_vector(32 downto 0):=(others=>'0');
 	
 	-- dmOutMux
 	signal outp		:	std_logic_vector(31 downto 0):=(others=>'0');
@@ -239,6 +255,10 @@ architecture Behavioral of datapath is
 
 	signal preAluMuxSel:std_logic:='0';
 	
+	signal preAluCout : std_logic_vector(0 downto 0):= (others=>'0');		
+   signal inp2 : std_logic_vector(31 downto 0) := (others => '0');		--alu inp2
+
+	
 	-- TODO remaining signals ifIdEn, ML(tell whether the instruction is multiply or not) , rfWriteEn , idExEn, preAluMuxSel, exMemEn, dmEn, memWbEn
 
 begin
@@ -248,7 +268,7 @@ DataForwards:process(clk)
 						-- for fwdA
 						if((exMemOut(71) = '1') and (exMemOut(67 downto 64) = idExOut(142 downto 139))) then
 							fwdA <= "01";
-						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(142 downto 139)) and (memWbOut(67 downto 63) = idExOut(142 downto 139))) then 
+						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(142 downto 139)) and (memWbOut(67 downto 64) = idExOut(142 downto 139))) then 
 							fwdA <= "10";
 						else 
 							fwdA <= "00";
@@ -256,7 +276,7 @@ DataForwards:process(clk)
 						-- for fwdB
 						if((exMemOut(71) = '1') and (exMemOut(67 downto 64) = idExOut(138 downto 135))) then
 							fwdB <= "01";
-						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(138 downto 135)) and (memWbOut(67 downto 63) = idExOut(138 downto 135))) then 
+						elsif((memWbOut(68) = '1') and (exMemOut(67 downto 64) /= idExOut(138 downto 135)) and (memWbOut(67 downto 64) = idExOut(138 downto 135))) then 
 							fwdB <= "10";
 						else 
 							fwdB <= "00";
@@ -293,7 +313,7 @@ DataForwards:process(clk)
 			clka 		=> 	clk,
          ena 		=>		'1',
          wea 		=>		"0",
-         addra 	=>		pcOut & "000000",
+         addra 	=>		"000000" & pcOut,
          dina 		=> 	"00000000000000000000000000000000",
          douta 	=>		instRegIn
 			);
@@ -345,7 +365,7 @@ DataForwards:process(clk)
 		port map(
 		 outA				=> 	aIn,
 		 outB 			=>		bIn,
-		 input   		=>    outp,
+		 input   		=>		outp,
 		 writeEnable 	=>		memWbOut(68), -- rfWriteEn,				-- DONE rfwrite EN should be replaced by RW in the last cycle
 		 regASel     	=>		regASel,
 		 regBSel     	=>		regBSel,
@@ -357,11 +377,11 @@ DataForwards:process(clk)
 	IDorEX : regGen 			-- 23 downto 0 => PC branch || 55 downto 24 for aIn || 
 									-- 87 downto 56 for bIn || 119 downto 88 for extended offset || 123 downto 119 for write Addr @tot 123 downto 0
 	 Generic map(
-			N			=> 143     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel
+			N			=> 144     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel + 1 bit inst Immediate
 			)
 	 Port map( 					-- idExOut(27 downto 24) == aIn; 
 			clk 		=>		clk,
-			regIn 	=> 	regASel & regBSel & RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
+			regIn 	=> 	instRegOut(25) & regASel & regBSel & RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
 			regOut 	=>		idExOut,				
 			regReset =>		'0',
 			regEn 	=>		idExEn
@@ -371,10 +391,22 @@ DataForwards:process(clk)
 	preAluMux: MyMultiplexer generic map (N => 32) 
 		port map (										--Selects between Rd and Rm
 			minp1 => idExOut(87 downto 56),
-			minp2 => idExOut(119 downto 88),
+			minp2 => "00000000000000000000" & idExOut(11 downto 0),							--idExOut(119 downto 88),
 			moutp => b, 
 			msel=> idExOut(132)					--preAluMuxSel				-- Asrc
 			);
+			
+	
+	preeAloo: preAlu 
+			port map (
+					I => idExOut(143), 
+					Rsrc => Rsrc, 
+					preAluInp => idExOut(11 downto 0),			--inst(11 downto 0),
+					preAluNum => to_bitVector(b), 			-- b == preAluNum
+					preAluOutp =>inp2 , 							-- actual number 
+					preAluCout => preAluCout					--cin for alu
+					);
+			
 	
 	fwdAMux: Multiplex4				-- TODO caution with the four way multiplexer instead of the three way as shown this is to 
 		generic map(	
@@ -395,7 +427,7 @@ DataForwards:process(clk)
 			N 	=> 32
 	)
 	port map(
-         minp1 	=> b,
+         minp1 	=> inp2,		-- adding inp2 from the prealu		--b,
 			minp2 	=> exMemOut(31 downto 0),
 			minp3 	=> outp,
 			minp4 	=>	"00000000000000000000000000000000",
@@ -406,6 +438,10 @@ DataForwards:process(clk)
 	
 	Aloo:alu
 		port map(
+			--pre alu task
+			--I				=> idExOut(143),
+			
+			
 			inp1			=>	signed(a1),
 			inp2			=>	signed(b1),
 			inFlags		=> inFlags,
@@ -454,15 +490,15 @@ DataForwards:process(clk)
          douta 	=>	dmOut
         );
     		
-	
+			
 	MemorWb : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
 									-- 67 downto 64 for writeAddr  @tot 67 downto 0
 	 Generic map(
-			N			=> 69		--68 datapath + 1 control
+			N			=> 70		--68 datapath + 1 control + 1 m2R
 			)
 	 Port map( 	
 			clk 		=>		clk,
-			regIn 	=> 	exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
+			regIn 	=> 	exMemOut(68) & exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
 			regOut 	=>		memWbOut,
 			regReset =>		'0',
 			regEn 	=>		memWbEn
@@ -470,11 +506,37 @@ DataForwards:process(clk)
 									-- memWbOut(68) = RW ; memWbOut(67 downto 64) = RW ; 
 	outputMux : MyMultiplexer generic map (N => 32) 
 		port map (										--Selects between Rd and Rm
-			minp1 => memWbOut(31 downto 0),
-			minp2 => memWbOut(63 downto 32),
+			minp1 => memWbOut(63 downto 32),
+			minp2 => memWbOut(31 downto 0),
 			moutp => outp, 
-			msel	=> exMemOut(68)					--dmOutSel
+			msel	=> memWbOut(69)			--exMemOut(68)					--dmOutSel
 			);
+	
+	
+	
+			
+--	outputMux : MyMultiplexer generic map (N => 32) 
+--		port map (										--Selects between Rd and Rm
+--			minp1 => exMemOut(31 downto 0),					--memWbOut(63 downto 32),
+--			minp2 => dmOut,			--memWbOut(31 downto 0),
+--			moutp => outp, 
+--			msel	=> exMemOut(68)					--dmOutSel
+--			);	
+--			
+--			
+--	MemorWb : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
+--									-- 67 downto 64 for writeAddr  @tot 67 downto 0
+--	 Generic map(
+--			N			=> 69		--68 datapath + 1 control + 1 m2R
+--			)
+--	 Port map( 	
+--			clk 		=>		clk,
+--			regIn 	=> 	exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & outp, 
+--			regOut 	=>		memWbOut,
+--			regReset =>		'0',
+--			regEn 	=>		memWbEn
+--         );		
+--									-- memWbOut(68) = RW ; memWbOut(67 downto 64) = RW ; 
 	
 	
 

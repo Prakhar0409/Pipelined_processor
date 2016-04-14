@@ -20,11 +20,11 @@
       <association xil_pn:name="Implementation" xil_pn:seqID="1"/>
     </file>
     <file xil_pn:name="alu.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="9"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="10"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="10"/>
     </file>
     <file xil_pn:name="PC.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="3"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="4"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="11"/>
     </file>
     <file xil_pn:name="regGen.vhd" xil_pn:type="FILE_VHDL">
@@ -32,11 +32,11 @@
       <association xil_pn:name="Implementation" xil_pn:seqID="14"/>
     </file>
     <file xil_pn:name="datapath.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="11"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="12"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="15"/>
     </file>
     <file xil_pn:name="ipcore_dir/InstMem.xco" xil_pn:type="FILE_COREGEN">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="6"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="7"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="16"/>
     </file>
     <file xil_pn:name="testInstMem.vhd" xil_pn:type="FILE_VHDL">
@@ -46,36 +46,40 @@
       <association xil_pn:name="PostTranslateSimulation" xil_pn:seqID="24"/>
     </file>
     <file xil_pn:name="MyMultiplexer.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="4"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="5"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="25"/>
     </file>
     <file xil_pn:name="ipcore_dir/dataMem.xco" xil_pn:type="FILE_COREGEN">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="7"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="8"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="26"/>
     </file>
     <file xil_pn:name="Multiplex4.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="5"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="6"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="37"/>
     </file>
     <file xil_pn:name="processor.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="13"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="14"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="42"/>
     </file>
     <file xil_pn:name="controller.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="12"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="13"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="43"/>
     </file>
     <file xil_pn:name="Actrl.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="10"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="11"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="44"/>
     </file>
     <file xil_pn:name="Bctrl.vhd" xil_pn:type="FILE_VHDL">
-      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="8"/>
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="9"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="45"/>
     </file>
     <file xil_pn:name="delete.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="0"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="46"/>
+    </file>
+    <file xil_pn:name="preAlu.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="3"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="64"/>
     </file>
     <file xil_pn:name="ipcore_dir/InstMem.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation" xil_pn:seqID="17"/>

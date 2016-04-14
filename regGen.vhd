@@ -51,7 +51,7 @@ inc:process(clk)
 		if rising_edge(clk) then
 			if regReset = '0' then
 				if regEn = '1' then 
-					regOut<=mem;
+					regOut<=regIn;--regOut<=mem;
 					mem<=regIn;
 				else
 					regOut<=mem;

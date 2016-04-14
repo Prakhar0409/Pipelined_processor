@@ -64,6 +64,13 @@ architecture Behavioral of processor is
 		port(
 			clk 			: in std_logic:='0';
 			
+				
+			exMemEn	: in std_logic := '0';
+			dmEn		: in std_logic:='0';
+			idExEn	: in std_logic := '0';
+			memWbEn	: in std_logic:='0';
+			ifIdEn	: in std_logic:='0';
+			
 			Rsrc 			: in std_logic := '0';			
 			--Actrl	: out std_logic_vector(3 downto 0);
 			Psrc 			: in std_logic := '0';
@@ -97,11 +104,16 @@ architecture Behavioral of processor is
 
 	-- TODO Donno
 	signal mul : std_logic_vector(3 downto 0) := (others=>'0');
+	
+	--TODO delete del
+	signal del : std_logic_vector(1 downto 0);
 begin
 	
 	
 	control : Controller 
 		port map(
+--			del => del,
+			
 			inst 	=> inst(31 downto 20),
 			mul	=> mul,
 			clock	=> clock,
@@ -124,7 +136,13 @@ begin
 	
 	datapather1 : datapath 
 		port map(
-			clk 			=> clock,
+			clk 			=> clock,			
+				
+			exMemEn		=> clock,
+			dmEn			=> clock,
+			idExEn		=> clock,
+			memWbEn		=> clock,
+			ifIdEn		=> clock,
 			
 			instOut	=> inst,
 			
