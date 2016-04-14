@@ -209,16 +209,16 @@ architecture Behavioral of datapath is
 	signal b				: 	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--ExMem multiplexer
-	signal exMemOut	:	std_logic_vector(71 downto 0):=(others=>'0');
+	signal exMemOut	:	std_logic_vector(81 downto 0):=(others=>'0');
 	
 	-- IDorEX register
-	signal idExOut		: 	std_logic_vector(143 downto 0):=(others=>'0');
+	signal idExOut		: 	std_logic_vector(153 downto 0):=(others=>'0');
 	signal aOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal bOut			:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal ExOffOut	:	std_logic_vector(31 downto 0):=(others=>'0');
 	signal wbAddr		:	std_logic_vector(3 downto 0):=(others=>'0');
 	
-	signal instRegOut :  std_logic_vector(31 downto 0) := (others => '0');
+	signal instRegOut :  std_logic_vector(41 downto 0) := (others => '0');
 
 	--signals for alu
 	signal carryIn		: 	std_logic:='0';
@@ -234,7 +234,7 @@ architecture Behavioral of datapath is
 	signal dmOut		:	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--memWB register
-	signal memWbOut	:	std_logic_vector(69 downto 0):=(others=>'0');
+	signal memWbOut	:	std_logic_vector(79 downto 0):=(others=>'0');
 	--signal memWbOut	:	std_logic_vector(32 downto 0):=(others=>'0');
 	
 	-- dmOutMux
@@ -320,16 +320,16 @@ DataForwards:process(clk)
 			
 	IForID : regGen 
 	 Generic map(
-			N			=> 32
+			N			=> 42				-- 32 + 10 also sending pc
 			)
 	 Port map( 	
 			clk 		=>		clk,
-			regIn 	=> 	instRegIn,
+			regIn 	=> 	pcOut & instRegIn,
 			regOut 	=>		instRegOut,
 			regReset =>		'0',
 			regEn 	=>		ifIdEn
          );
-	instOut <= instRegOut;		--instruction to be sent to the controller
+	instOut <= instRegOut(31 downto 0);		--instruction to be sent to the controller
 	-- TODO see if ML is also being forwarded to appropriate componenet via the register chaining
 --updateML:process(clk,instRegOut)				--checks if instruction is multiply or not kindoff part of control but still added in datapath
 --	begin
@@ -357,7 +357,7 @@ DataForwards:process(clk)
 			minp1 => instRegOut(3 downto 0), 	--Rm
 			minp2 => instRegOut(15 downto 12), 	--Rd
 			moutp => regBSel, 
-			msel=> Rsrc
+			msel=>  idExOut(132)			--Rsrc
 			);
 	
 	
@@ -377,11 +377,11 @@ DataForwards:process(clk)
 	IDorEX : regGen 			-- 23 downto 0 => PC branch || 55 downto 24 for aIn || 
 									-- 87 downto 56 for bIn || 119 downto 88 for extended offset || 123 downto 119 for write Addr @tot 123 downto 0
 	 Generic map(
-			N			=> 144     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel + 1 bit inst Immediate
+			N			=> 154     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel + 1 bit inst Immediate + 10 programCounter
 			)
 	 Port map( 					-- idExOut(27 downto 24) == aIn; 
 			clk 		=>		clk,
-			regIn 	=> 	instRegOut(25) & regASel & regBSel & RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
+			regIn 	=> 	instRegOut(41 downto 32) & instRegOut(25) & regASel & regBSel & RW & ML & Asrc & opc(3 downto 0) & Fset & MW & MR & M2R & instRegOut(15 downto 12) & "00000000000000000000" & instRegOut(11 downto 0) &  bIn & aIn & instRegOut(23 downto 0),
 			regOut 	=>		idExOut,				
 			regReset =>		'0',
 			regEn 	=>		idExEn
@@ -400,7 +400,7 @@ DataForwards:process(clk)
 	preeAloo: preAlu 
 			port map (
 					I => idExOut(143), 
-					Rsrc => Rsrc, 
+					Rsrc => idExOut(132),	--because idExOut(132) = Asrc						--Rsrc,  same as Asrc 
 					preAluInp => idExOut(11 downto 0),			--inst(11 downto 0),
 					preAluNum => to_bitVector(b), 			-- b == preAluNum
 					preAluOutp =>inp2 , 							-- actual number 
@@ -459,11 +459,11 @@ DataForwards:process(clk)
 	EXorMem : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
 									-- 67 downto 64 for writeAddr  @tot 67 downto 0
 	 Generic map(
-			N			=> 72				--68 for datapath + 4 for control  idExOut(134) == RW ; idExOut(126 downto 124) == MW,MR,M2R
+			N			=> 82				--68 for datapath + 4 for control  idExOut(134) == RW ; idExOut(126 downto 124) == MW,MR,M2R + 10 programcounter
 			)
 	 Port map( 	
 			clk 		=>		clk,
-			regIn 	=> 	idExOut(134) & idExOut(126 downto 124) & idExOut(123 downto 120) & idExOut(87 downto 56) & std_logic_vector(alooOut) ,
+			regIn 	=> 	idExOut(153 downto 144) & idExOut(134) & idExOut(126 downto 124) & idExOut(123 downto 120) & idExOut(87 downto 56) & std_logic_vector(alooOut) ,
 			regOut 	=>		exMemOut,
 			regReset =>		'0',
 			regEn 	=>		exMemEn
@@ -484,7 +484,7 @@ DataForwards:process(clk)
     PORT map(
          clka 		=>	clk,
          ena 		=>	'1',		-- Control MR i.e. exMemOut(71) == RW; exMemOut(70 downto 68) == MW,MR,M2R;
-         wea(0) 	=> exMemOut(69),					--dmEn,
+         wea(0) 	=> exMemOut(70),					--dmEn,
          addra 	=>	exMemOut(15 downto 0),				--  TODO check about possibility of fitting in exMemOut(31 downto 0),
          dina 		=> c,									--exMemOut(63 downto 32),
          douta 	=>	dmOut
@@ -494,11 +494,11 @@ DataForwards:process(clk)
 	MemorWb : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
 									-- 67 downto 64 for writeAddr  @tot 67 downto 0
 	 Generic map(
-			N			=> 70		--68 datapath + 1 control + 1 m2R
+			N			=> 80		--68 datapath + 1 control + 1 m2R
 			)
 	 Port map( 	
 			clk 		=>		clk,
-			regIn 	=> 	exMemOut(68) & exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
+			regIn 	=> 	exMemOut(81 downto 72) & exMemOut(68) & exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
 			regOut 	=>		memWbOut,
 			regReset =>		'0',
 			regEn 	=>		memWbEn
