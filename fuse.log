@@ -11,19 +11,18 @@ Parsing VHDL file "D:/vhdl/pipelinedDatapath/preAlu.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/PC.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/MyMultiplexer.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/Multiplex4.vhd" into library work
+Parsing VHDL file "D:/vhdl/pipelinedDatapath/flagReg.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/Bctrl.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/alu.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/Actrl.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/datapath.vhd" into library work
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 295: Actual for formal port minp1 is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 296: Actual for formal port minp2 is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 316: Actual for formal port addra is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 327: Actual for formal port regin is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 384: Actual for formal port regin is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 394: Actual for formal port minp2 is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 405: Actual for formal port prealunum is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 466: Actual for formal port regin is neither a static name nor a globally static expression
-WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 501: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 418: Actual for formal port addra is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 429: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 487: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 498: Actual for formal port minp2 is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 509: Actual for formal port prealunum is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 578: Actual for formal port regin is neither a static name nor a globally static expression
+WARNING:HDLCompiler:946 - "D:/vhdl/pipelinedDatapath/datapath.vhd" Line 613: Actual for formal port regin is neither a static name nor a globally static expression
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/controller.vhd" into library work
 Parsing VHDL file "D:/vhdl/pipelinedDatapath/processor.vhd" into library work
 Starting static elaboration
@@ -36,7 +35,6 @@ Compiling architecture behavioral of entity Bctrl [bctrl_default]
 Compiling architecture behavioral of entity controller [controller_default]
 Compiling package std_logic_arith
 Compiling package std_logic_unsigned
-Compiling architecture behavioral of entity MyMultiplexer [\MyMultiplexer(10)\]
 Compiling architecture behavioral of entity pc [pc_default]
 Compiling package textio
 Compiling package std_logic_textio
@@ -54,18 +52,16 @@ Compiling architecture behavioral of entity MyMultiplexer [\MyMultiplexer(32)\]
 Compiling architecture behavioral of entity preAlu [prealu_default]
 Compiling architecture behavioral of entity Multiplex4 [\Multiplex4(32)\]
 Compiling architecture behavioral of entity alu [alu_default]
+Compiling architecture behavioral of entity flagReg [flagreg_default]
 Compiling architecture behavioral of entity regGen [\regGen(82)\]
 Compiling architecture mem_module_behavioral of entity BLK_MEM_GEN_V7_3_mem_module [\BLK_MEM_GEN_V7_3_mem_module("bl...]
 Compiling architecture behavioral of entity BLK_MEM_GEN_V7_3 [\BLK_MEM_GEN_V7_3("blk_mem_gen_v...]
 Compiling architecture datamem_a of entity dataMem [datamem_default]
-Compiling architecture behavioral of entity regGen [\regGen(80)\]
 Compiling architecture behavioral of entity datapath [datapath_default]
-WARNING:HDLCompiler:746 - "N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Range is empty (null range)
-WARNING:HDLCompiler:220 - "N:/P.20131013/rtf/vhdl/src/ieee/numeric_std.vhd" Line 3314: Assignment ignored
 Compiling architecture behavioral of entity processor
 Time Resolution for simulation is 1ps.
 Waiting for 1 sub-compilation(s) to finish...
-Compiled 58 VHDL Units
+Compiled 56 VHDL Units
 Built simulation executable D:/vhdl/pipelinedDatapath/processor_isim_beh.exe
-Fuse Memory Usage: 56020 KB
-Fuse CPU Usage: 2952 ms
+Fuse Memory Usage: 56132 KB
+Fuse CPU Usage: 3015 ms

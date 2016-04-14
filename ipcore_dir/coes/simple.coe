@@ -4,4 +4,6 @@ memory_initialization_vector=
 		E3A01001,
 		E3A02003,
 		E3A04005,
-		E0806001;
+		E0805001,
+		E0406001,
+		E0070290;

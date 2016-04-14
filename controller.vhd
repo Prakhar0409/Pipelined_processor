@@ -31,6 +31,14 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity controller is
 	port (
+		
+--		exMemEn	: out std_logic := '0';
+--		dmEn		: out std_logic:='0';
+--		idExEn	: out std_logic := '0';
+--		memWbEn	: out std_logic:='0';
+--		ifIdEn	: out std_logic:='0';
+
+	
 		inst 	: in 	std_logic_vector(11 downto 0):=(others=>'0');				--ins[31 downto 20]
 		mul	: in  std_logic_vector(3 downto 0):=(others=>'0');					--ins[7 downto 4] = 1001 for mul
 		clock	: in 	std_logic;
@@ -76,7 +84,20 @@ architecture Behavioral of Controller is
 begin
 	del <= inst(7 downto 6);
 	
-	-- Asrc
+	
+--InterStateRegs:process(clock)
+--					begin
+--						if () then 
+--						
+--						else 
+--							exMemEn	<= clock;
+--							dmEn		<= clock;
+--							idExEn	<= clock;
+--							memWbEn	<= clock;
+--							ifIdEn	<= clock;
+--						end if;
+--					end process;
+--	-- Asrc
 	
 	actr : Actrl 
 		port map(

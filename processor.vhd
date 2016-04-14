@@ -40,6 +40,13 @@ architecture Behavioral of processor is
 	
 	component Controller is
 		port (
+			
+--			exMemEn	: out std_logic := '0';
+--			dmEn		: out std_logic:='0';
+--			idExEn	: out std_logic := '0';
+--			memWbEn	: out std_logic:='0';
+--			ifIdEn	: out std_logic:='0';
+		
 			inst 	: in 	std_logic_vector(11 downto 0):=(others=>'0');				--ins[31 downto 20]
 			mul	: in  std_logic_vector(3 downto 0):=(others=>'0');					--ins[7 downto 4] = 1001 for mul
 			clock	: in 	std_logic;
@@ -64,13 +71,9 @@ architecture Behavioral of processor is
 		port(
 			clk 			: in std_logic:='0';
 			
+			outFlags	: out	std_logic_vector(3 downto 0):=(others=>'0');
 				
-			exMemEn	: in std_logic := '0';
-			dmEn		: in std_logic:='0';
-			idExEn	: in std_logic := '0';
-			memWbEn	: in std_logic:='0';
-			ifIdEn	: in std_logic:='0';
-			
+		
 			Rsrc 			: in std_logic := '0';			
 			--Actrl	: out std_logic_vector(3 downto 0);
 			Psrc 			: in std_logic := '0';
@@ -89,7 +92,7 @@ architecture Behavioral of processor is
 	end component;
 	
 	signal inst 		: std_logic_vector(31 downto 0) := (others=>'0');
-	signal flags 		: std_logic_vector(3 downto 0) := (others=>'0');
+	
 	signal Rsrc 		: std_logic:='0';
 	signal Psrc 		: std_logic:='0';
 	signal Asrc 		: std_logic:='0';
@@ -102,8 +105,14 @@ architecture Behavioral of processor is
 	signal ML 			: std_logic:='0';
 	signal opCode 		: std_logic_vector(3 downto 0):= (others => '0');
 
+
+
+	signal Flags 		: std_logic_vector(3 downto 0) := (others=>'0');
+
+
 	-- TODO Donno
 	signal mul : std_logic_vector(3 downto 0) := (others=>'0');
+	
 	
 	--TODO delete del
 	signal del : std_logic_vector(1 downto 0);
@@ -113,11 +122,17 @@ begin
 	control : Controller 
 		port map(
 --			del => del,
+--			
+--			exMemEn	=> exMemEns,
+--			dmEn		=> dmEns,
+--			idExEn	=> idExEns,
+--			memWbEn	=> memWbEns,
+--			ifIdEn	=> ifIdEns,
 			
 			inst 	=> inst(31 downto 20),
 			mul	=> mul,
 			clock	=> clock,
-			flags	=> flags,
+			flags	=> Flags,
 			
 			Rsrc 	=> Rsrc,
 			--Actrl	: out std_logic_vector(3 downto 0);
@@ -138,12 +153,14 @@ begin
 		port map(
 			clk 			=> clock,			
 				
-			exMemEn		=> clock,
-			dmEn			=> clock,
-			idExEn		=> clock,
-			memWbEn		=> clock,
-			ifIdEn		=> clock,
-			
+--			exMemEn		=> clock,
+--			dmEn			=> clock,
+--			idExEn		=> clock,
+--			memWbEn		=> clock,
+--			ifIdEn		=> clock,
+--			
+			outFlags		=> Flags,
+	
 			instOut	=> inst,
 			
 			Rsrc 			=> Rsrc,

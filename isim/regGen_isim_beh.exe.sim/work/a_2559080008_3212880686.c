@@ -27,7 +27,7 @@ extern char *IEEE_P_2592010699;
 unsigned char ieee_p_2592010699_sub_1744673427_503743352(char *, char *, unsigned int , unsigned int );
 
 
-static void work_a_2601486292_3212880686_p_0(char *t0)
+static void work_a_2559080008_3212880686_p_0(char *t0)
 {
     char *t1;
     unsigned char t2;
@@ -64,16 +64,16 @@ LAB2:    xsi_set_current_line(52, ng0);
         goto LAB5;
 
 LAB7:    xsi_set_current_line(60, ng0);
-    t1 = xsi_get_transient_memory(80U);
-    memset(t1, 0, 80U);
+    t1 = xsi_get_transient_memory(32U);
+    memset(t1, 0, 32U);
     t3 = t1;
-    memset(t3, (unsigned char)2, 80U);
+    memset(t3, (unsigned char)2, 32U);
     t4 = (t0 + 3576);
     t7 = (t4 + 56U);
     t10 = *((char **)t7);
     t11 = (t10 + 56U);
     t12 = *((char **)t11);
-    memcpy(t12, t1, 80U);
+    memcpy(t12, t1, 32U);
     xsi_driver_first_trans_fast(t4);
     xsi_set_current_line(61, ng0);
     t1 = (t0 + 1832U);
@@ -83,7 +83,7 @@ LAB7:    xsi_set_current_line(60, ng0);
     t7 = *((char **)t4);
     t10 = (t7 + 56U);
     t11 = *((char **)t10);
-    memcpy(t11, t3, 80U);
+    memcpy(t11, t3, 32U);
     xsi_driver_first_trans_fast_port(t1);
 
 LAB6:    goto LAB3;
@@ -104,7 +104,7 @@ LAB10:    xsi_set_current_line(57, ng0);
     t7 = *((char **)t4);
     t10 = (t7 + 56U);
     t11 = *((char **)t10);
-    memcpy(t11, t3, 80U);
+    memcpy(t11, t3, 32U);
     xsi_driver_first_trans_fast_port(t1);
 
 LAB9:    goto LAB6;
@@ -117,7 +117,7 @@ LAB8:    xsi_set_current_line(54, ng0);
     t12 = *((char **)t11);
     t13 = (t12 + 56U);
     t14 = *((char **)t13);
-    memcpy(t14, t10, 80U);
+    memcpy(t14, t10, 32U);
     xsi_driver_first_trans_fast_port(t3);
     xsi_set_current_line(55, ng0);
     t1 = (t0 + 1192U);
@@ -127,16 +127,16 @@ LAB8:    xsi_set_current_line(54, ng0);
     t7 = *((char **)t4);
     t10 = (t7 + 56U);
     t11 = *((char **)t10);
-    memcpy(t11, t3, 80U);
+    memcpy(t11, t3, 32U);
     xsi_driver_first_trans_fast(t1);
     goto LAB9;
 
 }
 
 
-extern void work_a_2601486292_3212880686_init()
+extern void work_a_2559080008_3212880686_init()
 {
-	static char *pe[] = {(void *)work_a_2601486292_3212880686_p_0};
-	xsi_register_didat("work_a_2601486292_3212880686", "isim/processor_isim_beh.exe.sim/work/a_2601486292_3212880686.didat");
+	static char *pe[] = {(void *)work_a_2559080008_3212880686_p_0};
+	xsi_register_didat("work_a_2559080008_3212880686", "isim/regGen_isim_beh.exe.sim/work/a_2559080008_3212880686.didat");
 	xsi_register_executes(pe);
 }

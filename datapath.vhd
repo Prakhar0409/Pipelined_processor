@@ -34,13 +34,7 @@ entity datapath is
 	port(
 		clk : in std_logic:='0';
 	
-		exMemEn	: in std_logic := '0';
-		dmEn		: in std_logic:='0';
-		idExEn	: in std_logic := '0';
-		memWbEn	: in std_logic:='0';
-		ifIdEn	: in std_logic:='0';											
-
-
+		outFlags	: out	std_logic_vector(3 downto 0):=(others=>'0');
 
 		-- Directly to the correct places
 		Rsrc 	: in std_logic := '0';			
@@ -71,6 +65,15 @@ entity datapath is
 end datapath;
 
 architecture Behavioral of datapath is
+	
+	component flagReg is
+	  port (
+		flagClk		: in  std_logic;
+		flagInp 		: in	std_logic_vector(3 downto 0);
+		flagEn		: in  std_logic;
+		flagOut		: out std_logic_vector(3 downto 0)
+	);
+	end component;
 	
 	component Multiplex4 is
 	generic (
@@ -222,10 +225,12 @@ architecture Behavioral of datapath is
 
 	--signals for alu
 	signal carryIn		: 	std_logic:='0';
-	signal inFlags		: 	std_logic_vector(3 downto 0):=(others=>'0');
-	signal outFlags	: 	signed(3 downto 0):=(others=>'0');
+	signal Flags		: 	std_logic_vector(3 downto 0):=(others=>'0');
+	signal aluFlags	: 	signed(3 downto 0):=(others=>'0');
 	signal alooOut		:	signed(31 downto 0):=(others=>'0');
 	signal carryOut	:	std_logic:='0';
+
+	
 
 		
 	
@@ -234,7 +239,7 @@ architecture Behavioral of datapath is
 	signal dmOut		:	std_logic_vector(31 downto 0):=(others=>'0');
 	
 	--memWB register
-	signal memWbOut	:	std_logic_vector(79 downto 0):=(others=>'0');
+	signal memWbOut	:	std_logic_vector(81 downto 0):=(others=>'0');
 	--signal memWbOut	:	std_logic_vector(32 downto 0):=(others=>'0');
 	
 	-- dmOutMux
@@ -259,9 +264,55 @@ architecture Behavioral of datapath is
    signal inp2 : std_logic_vector(31 downto 0) := (others => '0');		--alu inp2
 
 	
+	signal exMemEn	:  std_logic := '0';
+	signal dmEn		:  std_logic:='0';
+	signal idExEn	:  std_logic := '0';
+	signal memWbEn	:  std_logic:='0';
+	signal ifIdEn	:  std_logic:='0';											
+
+	signal state 	: integer := 1;
+	signal pcElse	:	std_logic_vector(9 downto 0):=(others=>'0');
+	signal zero		:	std_logic_vector(199 downto 0):=(others=>'0');
+	
 	-- TODO remaining signals ifIdEn, ML(tell whether the instruction is multiply or not) , rfWriteEn , idExEn, preAluMuxSel, exMemEn, dmEn, memWbEn
 
 begin
+	
+	outFlags <= Flags;
+	
+interState : process(clk)
+		begin	
+			if ((idExOut(125) = '1') and ((idExOut(123 downto 120) = instRegOut(19 downto 16)) or (idExOut(123 downto 120) = instRegOut(3 downto 0)))) then			
+				ifIdEn	<= '0'; 																							-- idExOut(125) == MR; idExOut(123 downto 120) == Id/Ex.Rd
+				idExEn <= '0';																							--instRegOut(11 downto 8)==Rs; instRegOut(19 downto 16) == Rn
+				exMemEn	<= clk;																		--instRegOut(3 downto 0)==Rm
+				memWbEn <= clk;
+			else
+				if (rising_edge(clk)) then
+					if (state = 1) then
+						state <= 2;						
+						ifIdEn	<= '1';
+						idExEn	<= '1';
+						exMemEn	<= '1';
+						memWbEn	<= '1';
+					elsif (state = 2) then 
+						state <= 1;
+						ifIdEn	<= '0';
+						idExEn	<= '0';
+						exMemEn	<= '0';
+						memWbEn	<= '0';
+						
+					else
+						state <= 1;
+						ifIdEn	<= '0';
+						idExEn	<= '0';
+						exMemEn	<= '0';
+						memWbEn	<= '0';		
+					end if;
+				end if;
+			end if;
+		end process;
+	
 	
 DataForwards:process(clk)
 					begin
@@ -287,17 +338,68 @@ DataForwards:process(clk)
 						else 
 							fwdC <= '0';
 						end if;
-
 					end process;
 	
-	pcMux : MyMultiplexer generic map (N => 10) 
-		port map (										--Selects between Rd and Rm
-			minp1 => std_logic_vector(unsigned(pcOut)+1),
-			minp2 => std_logic_vector(unsigned(pcOut)+unsigned(idExOut(9 downto 0))),	--  branch 23 bits cannot fit into memory of a bram hence offset of 10 bits
-			moutp => pcIn(9 downto 0), 
-			msel=> pSel
-			);
-	
+pcBranch:process(clk,pcOut)
+			begin	
+				if (instRegOut(27 downto 26) = "10") then 		-- it is a branch instruction
+					if (signed(instRegOut(23 downto 0)) < 0 ) then 				-- up==1 therefore predict branch
+						-- predict branch has occured; Hence next Instruction is the 
+						pcElse <= std_logic_vector(signed(pcOut)+1);
+						pcIn(9 downto 0) <= std_logic_vector(signed(pcOut) + signed(instRegOut(9 downto 0)));				--unsigned(idExOut(9 downto 0)))
+					else 
+						--predict branch did not occur;
+						pcElse <= std_logic_vector(signed(pcOut) + signed(instRegOut(9 downto 0)));
+						pcIn(9 downto 0) <= std_logic_vector(signed(pcOut)+1);			
+					end if;
+				else				-- not a branch instruction
+					pcIn(9 downto 0) <= std_logic_vector(signed(pcOut)+1);
+				end if;
+			end process;
+			
+			
+--	
+--branchCorrection:process(clk,pcOut)		-- if (p==1 and positive branch then need correction and if p)
+--			begin	
+--				if ((p='1') and (instRegOut(27 downto 26) = "10")) then 		-- it is a branch instruction and beanch should take place
+--					if (signed(instRegOut(23 downto 0)) < 0 ) then 				-- up==1 therefore branch was predicted and flush one instruction
+--						-- predict branch has occured; Hence next Instruction is the 
+--						instRegOut <= zero(31 downto 0);		--flush instruction 1
+--						idExOut <= zero(153 downto 0);		--flush instruction 2
+--						
+--						--pcElse <= std_logic_vector(signed(pcOut)+1);
+--						--pcIn(9 downto 0) <= std_logic_vector(signed(pcOut) + signed(instRegOut(9 downto 0)));				--unsigned(idExOut(9 downto 0)))
+--					else 		        	-- it is a positive branch and branch not predicted
+--						--predict branch did not occur;
+--						instRegOut <= zero(31 downto 0);		--flush instruction 1
+--						idExOut <= zero(153 downto 0);		--flush instruction 2
+--						
+--						pcIn <= pcElse;				-- correction in branch
+--						
+--					end if;
+--				elsif ((p='0') and (instRegOut(27 downto 26) = "10")) then			-- no branch
+--					if (signed(instRegOut(23 downto 0)) < 0 ) then 				-- up==1 therefore branch was predicted; to be corrected 
+--						instRegOut <= zero(31 downto 0);		--flush instruction 1
+--						idExOut <= zero(153 downto 0);		--flush instruction 2
+--						pcIn <= pcElse;
+--					else 		-- branch notpredicted and hence no correction required. Just Chill
+--						-- Chill
+--					end if;
+--				end if;
+--			end process;
+--						
+						
+						
+						
+	-- Erase the following commented code.
+--	pcMux : MyMultiplexer generic map (N => 10) 
+--		port map (										--Selects between Rd and Rm
+--			minp1 => std_logic_vector(unsigned(pcOut)+1),
+--			minp2 => std_logic_vector(unsigned(pcOut)+unsigned(idExOut(9 downto 0))),	--  branch 23 bits cannot fit into memory of a bram hence offset of 10 bits
+--			moutp => pcIn(9 downto 0), 
+--			msel=> pSel
+--			);
+--	
 
 	 programCounter:pc
 	   Port map( 	
@@ -374,8 +476,9 @@ DataForwards:process(clk)
 		);
 	
 	
+	
 	IDorEX : regGen 			-- 23 downto 0 => PC branch || 55 downto 24 for aIn || 
-									-- 87 downto 56 for bIn || 119 downto 88 for extended offset || 123 downto 119 for write Addr @tot 123 downto 0
+									-- 87 downto 56 for bIn || 119 downto 88 for extended offset || 123 downto 120 for write Addr @tot 123 downto 0
 	 Generic map(
 			N			=> 154     -- 124 for datapath signals + 11 control signals + 8 regASel, regBsel + 1 bit inst Immediate + 10 programCounter
 			)
@@ -386,7 +489,8 @@ DataForwards:process(clk)
 			regReset =>		'0',
 			regEn 	=>		idExEn
          );
-	
+												-- idExOut(125) == MR; idExOut(123 downto 120) == Id/Ex.Rd
+												-- idExOut(127) = Fset;
 	
 	preAluMux: MyMultiplexer generic map (N => 32) 
 		port map (										--Selects between Rd and Rm
@@ -444,16 +548,24 @@ DataForwards:process(clk)
 			
 			inp1			=>	signed(a1),
 			inp2			=>	signed(b1),
-			inFlags		=> inFlags,
+			inFlags		=> Flags,
 			ML				=>	idExOut(133),			--ML
 			cin 			=> carryIn,
 		--	s : in std_logic;	
-			outFlags		=>	outFlags,
+			outFlags		=>	aluFlags,
 			opc 			=> idExOut(131 downto 128),						--instRegOut(24 downto 21),			
 	--		flag 			: out signed (3 downto 0) := (others => '0');
 			outp			=>	alooOut,
 			Cout			=>	carryOut
 			);
+	
+	flager:flagReg 
+			port map(
+					flagclk	=> clk, 
+					flagInp 	=> std_logic_vector(aluFlags), 
+					flagOut => Flags, 
+					flagEn => idExOut(127)				--Fset
+					);
 	
 	
 	EXorMem : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
@@ -494,11 +606,11 @@ DataForwards:process(clk)
 	MemorWb : regGen 			-- 31 downto 0 => aluOut branch || 63 downto 32 for strData || 
 									-- 67 downto 64 for writeAddr  @tot 67 downto 0
 	 Generic map(
-			N			=> 80		--68 datapath + 1 control + 1 m2R
+			N			=> 82		--68 datapath + 1 control + 1 m2R + 2dummy
 			)
 	 Port map( 	
 			clk 		=>		clk,
-			regIn 	=> 	exMemOut(81 downto 72) & exMemOut(68) & exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
+			regIn 	=> 	exMemOut(81 downto 72) & "00" & exMemOut(68) & exMemOut(71) & exMemOut(67 downto 64) & exMemOut(31 downto 0) & dmOut, 
 			regOut 	=>		memWbOut,
 			regReset =>		'0',
 			regEn 	=>		memWbEn
